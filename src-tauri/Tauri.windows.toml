@@ -5,9 +5,18 @@ version = "1.0.0"
 # beforeBuildCommand = { script = "pnpm build_utils_windows && pnpm build" }
 
 [bundle]
+targets = ["nsis"]
 # externalBin = ["bin/ai_tool.exe"]
 # 动态编译 ffmpeg ffprobe, 通过 resources 打包动态链接库和可执行文件
 resources = ["bin/windows"]
+
+[bundle.windows]
+digestAlgorithm = "sha256"
+
+[bundle.windows.nsis]
+installMode = "perMachine"
+installerIcon = "icons/icon.ico"
+# template = "./template/installer.nsi"
 
 [plugins.updater]
 windows = { "installMode" = "passive" }
