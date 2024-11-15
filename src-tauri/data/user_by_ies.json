@@ -1,0 +1,75 @@
+{
+  "extra": {
+    "now": 1701523111386,
+    "logid": "20231202211831E018A3E31C6B2B9E719B"
+  },
+  "status_code": 0,
+  "user_info": {
+    "short_id": "0",
+    "nickname": "小米粉",
+    "signature": "另一个有趣的我在XEva（小米粉）\n不玩社交软件和别的平台\n理想型：@米粉肉  🍠同名\n裙：八级/跑车联系@阿乐要开心",
+    "avatar_thumb": {
+      "uri": "aweme-avatar/tos-cn-avt-0015_6a9c1585e1bf884202d8144bd3fbe0b5",
+      "url_list": [
+        "https://p6.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-avt-0015_6a9c1585e1bf884202d8144bd3fbe0b5.jpeg?from=2956013662",
+        "https://p3.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-avt-0015_6a9c1585e1bf884202d8144bd3fbe0b5.jpeg?from=2956013662",
+        "https://p26.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-avt-0015_6a9c1585e1bf884202d8144bd3fbe0b5.jpeg?from=2956013662"
+      ]
+    },
+    "avatar_medium": {
+      "uri": "aweme-avatar/tos-cn-avt-0015_6a9c1585e1bf884202d8144bd3fbe0b5",
+      "url_list": [
+        "https://p6.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-avt-0015_6a9c1585e1bf884202d8144bd3fbe0b5.jpeg?from=2956013662",
+        "https://p3.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-avt-0015_6a9c1585e1bf884202d8144bd3fbe0b5.jpeg?from=2956013662",
+        "https://p26.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-avt-0015_6a9c1585e1bf884202d8144bd3fbe0b5.jpeg?from=2956013662"
+      ]
+    },
+    "follow_status": 0,
+    "aweme_count": 80,
+    "following_count": 90,
+    "favoriting_count": 0,
+    "total_favorited": "10708527",
+    "custom_verify": "",
+    "unique_id": "66989592029",
+    "verification_type": 0,
+    "original_musician": {
+      "music_count": 0,
+      "music_used_count": 0,
+      "digg_count": 0
+    },
+    "enterprise_verify_reason": "",
+    "mplatform_followers_count": 1247000,
+    "followers_detail": null,
+    "platform_sync_info": null,
+    "geofencing": null,
+    "policy_version": null,
+    "sec_uid": "MS4wLjABAAAAB7geBosrrW1XPPqgd88hbbKF8fymijEvW5wTsq4qIK6mDkbb5Ycvl8_fxDrHCawy",
+    "type_label": null,
+    "show_favorite_list": false,
+    "card_entries": [
+      {
+        "type": 2,
+        "title": "粉丝群",
+        "sub_title": "3个群聊",
+        "goto_url": "aweme://im/FansGroup/GuestState",
+        "icon_dark": {
+          "uri": "https://p3.douyinpic.com/obj/im-resource/old_fans_group_manage_dark.png",
+          "url_list": [
+            "https://p3.douyinpic.com/obj/im-resource/old_fans_group_manage_dark.png",
+            "https://p6.douyinpic.com/obj/im-resource/old_fans_group_manage_dark.png",
+            "https://p9.douyinpic.com/obj/im-resource/old_fans_group_manage_dark.png"
+          ]
+        },
+        "icon_light": {
+          "uri": "https://p3.douyinpic.com/obj/im-resource/old_fans_group_manage_light.png",
+          "url_list": [
+            "https://p3.douyinpic.com/obj/im-resource/old_fans_group_manage_light.png",
+            "https://p6.douyinpic.com/obj/im-resource/old_fans_group_manage_light.png",
+            "https://p9.douyinpic.com/obj/im-resource/old_fans_group_manage_light.png"
+          ]
+        }
+      }
+    ],
+    "mix_info": null
+  }
+}

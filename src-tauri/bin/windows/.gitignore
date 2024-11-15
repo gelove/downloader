@@ -1,0 +1,6 @@
+# *
+# !.gitignore
+
+MediaInfo.exe
+ffmpeg/ffprobe.exe
+ffmpeg/ffplay.exe
