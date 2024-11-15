@@ -1,7 +1,7 @@
 [package]
 name = "downloader"
-version = "1.0.0"
-description = "douyin downloader, video and audio processing"
+version = "1.0.1"
+description = "douyin downloader, video and audio transformer"
 authors = ["Allen"]
 edition = "2021"
 
@@ -43,7 +43,8 @@ serde_json = "1.0.132"
 serde_urlencoded = "0.7.1"
 sm3 = "0.4.2"
 sysinfo = "0.32.0"
-tauri = { version = "2.1.1", features = [ "macos-private-api",
+tauri = { version = "2.1.1", features = [
+  "macos-private-api",
   "protocol-asset",
   "config-toml",
   "devtools",
