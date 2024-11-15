@@ -4,6 +4,11 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+env:
+  CARGO_INCREMENTAL: 0
+  RUST_BACKTRACE: short
+  # RUST_BACKTRACE: full
+  # CARGO_PROFILE_RELEASE_BUILD_OVERRIDE_DEBUG: true
 
 jobs:
   release:
@@ -52,18 +57,15 @@ jobs:
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
         env:
-          # RUST_BACKTRACE: ${{ vars.RUST_BACKTRACE }}
-          # CARGO_PROFILE_RELEASE_BUILD_OVERRIDE_DEBUG: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
-          # tagName: v__VERSION__ # action 会自动将 __VERSION__ 替换为程序版本号
-          # tagName: app-v__VERSION__ # action 会自动将 __VERSION__ 替换为程序版本号
-          tagName: ${{ github.ref_name }} # 仅当工作流程触发器为新标签时有效
+          tagName: v__VERSION__ # action 会自动将 __VERSION__ 替换为程序版本号
+          # tagName: ${{ github.ref_name }}
           releaseName: "Downloader v__VERSION__"
           releaseBody: "See the assets to download this version and install."
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           args: --target ${{ matrix.target }}
 
