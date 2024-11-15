@@ -25,7 +25,6 @@ jobs:
           - platform: windows-latest
             target: "x86_64-pc-windows-msvc"
     runs-on: ${{ matrix.platform }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -61,8 +60,8 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
-          tagName: v__VERSION__ # action 会自动将 __VERSION__ 替换为程序版本号
-          # tagName: ${{ github.ref_name }}
+          # tagName: v__VERSION__
+          tagName: ${{ github.ref_name }}
           releaseName: "Downloader v__VERSION__"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: false

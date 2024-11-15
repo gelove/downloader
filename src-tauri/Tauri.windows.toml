@@ -1,5 +1,3 @@
-version = "1.0.0"
-
 # [build]
 # beforeDevCommand = { script = "pnpm build_utils_windows && pnpm dev" }
 # beforeBuildCommand = { script = "pnpm build_utils_windows && pnpm build" }
