@@ -260,8 +260,8 @@ export async function getMediaInfo(filepath: string) {
  * @example
  * ```ffmpeg
  * 视频竖屏转横屏
- * ffmpeg -i input.mp4 -vf "split[a][b];[a]scale=iw/10:-2,boxblur=10:5,scale=1920:1080,setsar=1[bg];[b]scale=-2:1080[fg];[bg][fg]overlay=(W-w)/2:0" -c:v libx264 -preset veryfast -progress pipe:2 output.mp4 -y
- * ffmpeg -i input.mp4 -vf "split[a][b];[a]scale=ih:iw,setsar=1,boxblur=10:5[bg];[b]scale=-2:iw[fg];[bg][fg]overlay=(W-w)/2:0" -c:v libx264 -preset veryfast -progress pipe:2 output.mp4 -y
+ * ffmpeg -i input.mp4 -vf "split[a][b];[a]scale=iw/10:-2,boxblur=10:5,scale=1920:1080,setsar=1[bg];[b]scale=-2:1080[fg];[bg][fg]overlay=(W-w)/2:0" -c:v libsvtav1 -preset veryfast -progress pipe:2 output.mp4 -y
+ * ffmpeg -i input.mp4 -vf "split[a][b];[a]scale=ih:iw,setsar=1,boxblur=10:5[bg];[b]scale=-2:iw[fg];[bg][fg]overlay=(W-w)/2:0" -c:v libsvtav1 -preset veryfast -progress pipe:2 output.mp4 -y
  * ```
  * @returns 命令行对象
  */
@@ -280,8 +280,8 @@ export async function videoToLandscapeCmd(
   const filter = `split[a][b];[a]scale=iw/10:-2,boxblur=10:5,scale=${width}:${height},setsar=1[bg];[b]scale=-2:${height}[fg];[bg][fg]overlay=(W-w)/2:0`;
   // 背景视频宽度与高度互换, 前景视频高度度缩放到原视频宽度
   cmdArr.push(filter);
-  // const rest = "-c:v libx264 -crf 18 -aspect 16:9 -f mp4 -preset veryfast -progress pipe:2";
-  const rest = "-c:v libx264 -preset veryfast -progress pipe:2";
+  // const rest = "-c:v libsvtav1 -crf 18 -aspect 16:9 -f mp4 -preset veryfast -progress pipe:2";
+  const rest = "-c:v libx264 -progress pipe:2";
   cmdArr.push(...rest.split(" "));
   cmdArr.push(dest);
   cmdArr.push("-y");
@@ -293,8 +293,8 @@ export async function videoToLandscapeCmd(
 
 /**
  * 视频横屏转竖屏（上下添加模糊背景 原宽度=>高度 原高度=>宽度）
- * ffmpeg -i input.mp4 -vf "split[a][b];[a]scale=iw/10:-2,boxblur=10:5,scale=1080:1980,setsar=1[bg];[b]scale=1080:-2[fg];[bg][fg]overlay=0：(H-h)/2" -c:v libx264 -crf 18 -aspect 9:16 -f mp4 -preset veryfast -progress pipe:2 output.mp4 -y
- * ffmpeg -i 7430422553807572259.mp4 -vf "split[a][b];[a]scale=iw/10:-2,boxblur=10:5,scale=1080:1980,setsar=1[bg];[b]scale=1080:-2[fg];[bg][fg]overlay=0:(H-h)/2" -c:v libx264 -crf 18 -aspect 9:16 -f mp4 -preset veryfast -progress pipe:2 output.mp4 -y
+ * ffmpeg -i input.mp4 -vf "split[a][b];[a]scale=iw/10:-2,boxblur=10:5,scale=1080:1980,setsar=1[bg];[b]scale=1080:-2[fg];[bg][fg]overlay=0：(H-h)/2" -c:v libsvtav1 -crf 18 -aspect 9:16 -f mp4 -preset veryfast -progress pipe:2 output.mp4 -y
+ * ffmpeg -i 7430422553807572259.mp4 -vf "split[a][b];[a]scale=iw/10:-2,boxblur=10:5,scale=1080:1980,setsar=1[bg];[b]scale=1080:-2[fg];[bg][fg]overlay=0:(H-h)/2" -c:v libsvtav1 -crf 18 -aspect 9:16 -f mp4 -preset veryfast -progress pipe:2 output.mp4 -y
  * 命令说明：
  * split[a][b] - 将输入视频分成两个流
  * [a]scale=iw/10:-2,boxblur=10:5,scale=1080:1980,setsar=1[bg] - 第一个流缩小10倍并添加模糊效果然后强制缩放为输出视频大小作为背景
@@ -318,7 +318,7 @@ export async function videoToPortraitCmd(
   cmdArr.push("-vf");
   const filter = `split[a][b];[a]scale=iw/10:-2,boxblur=10:5,scale=${width}:${height},setsar=1[bg];[b]scale=${width}:-2[fg];[bg][fg]overlay=0:(H-h)/2`;
   cmdArr.push(filter);
-  const rest = "-c:v libx264 -preset veryfast -progress pipe:2";
+  const rest = "-c:v libx264 -progress pipe:2";
   cmdArr.push(...rest.split(" "));
   cmdArr.push(dest);
   cmdArr.push("-y");
