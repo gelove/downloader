@@ -20,19 +20,26 @@ async function getLastGitHubRelease(owner, repo) {
 }
 
 let urls = [
-  "https://github.com/gelove/downloader/releases/download/v1.0.0/downloader_1.0.0_x64.dmg",
-  "https://mirror.ghproxy.com/https://github.com/gelove/downloader/releases/download/v1.0.0/downloader_1.0.0_x64.dmg",
-  "https://github.com/gelove/downloader/releases/download/v1.0.0/downloader_1.0.0_x64-setup.exe",
-  "https://mirror.ghproxy.com/https://github.com/gelove/downloader/releases/download/v1.0.0/downloader_1.0.0_x64-setup.exe",
+  "https://github.com/gelove/downloader/releases/download/v1.0.0/Downloader_1.0.0_aarch64.dmg",
+  "https://mirror.ghproxy.com/https://github.com/gelove/downloader/releases/download/v1.0.0/Downloader_1.0.0_aarch64.dmg",
+  "https://github.com/gelove/downloader/releases/download/v1.0.0/Downloader_1.0.0_x64.dmg",
+  "https://mirror.ghproxy.com/https://github.com/gelove/downloader/releases/download/v1.0.0/Downloader_1.0.0_x64.dmg",
+  "https://github.com/gelove/downloader/releases/download/v1.0.0/Downloader_1.0.0_x64-setup.exe",
+  "https://mirror.ghproxy.com/https://github.com/gelove/downloader/releases/download/v1.0.0/Downloader_1.0.0_x64-setup.exe",
 ];
 
 const getReleaseInfo = async () => {
   const res = await getLastGitHubRelease("gelove", "downloader");
+  const originAppleDmg = res.assets.filter((item) => item.name.endsWith("aarch64.dmg"))[0]
+    .browser_download_url;
+  const originIntelDmg = res.assets.filter((item) => item.name.endsWith("x64.dmg"))[0]
+    .browser_download_url;
   const originExe = res.assets.filter((item) => item.name.endsWith(".exe"))[0].browser_download_url;
-  const originDmg = res.assets.filter((item) => item.name.endsWith(".dmg"))[0].browser_download_url;
   urls = [
-    originDmg,
-    `https://mirror.ghproxy.com/${originDmg}`,
+    originAppleDmg,
+    `https://mirror.ghproxy.com/${originAppleDmg}`,
+    originIntelDmg,
+    `https://mirror.ghproxy.com/${originIntelDmg}`,
     originExe,
     `https://mirror.ghproxy.com/${originExe}`,
   ];
