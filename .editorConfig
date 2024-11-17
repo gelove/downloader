@@ -1,0 +1,11 @@
+# root = true
+
+# [*]
+# indent_style = tab # 空格缩进 space tab
+# indent_size = 2 # 缩进空格2
+# end_of_line = lf # 结尾换行符 lf cr crlf
+# chartset = utf-8 # 文件编码
+# spaces_around_operators = true # 运算符两边都有空格
+
+# [package.json]
+# indent_size = 2

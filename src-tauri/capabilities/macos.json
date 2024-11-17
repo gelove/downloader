@@ -1,0 +1,29 @@
+{
+  "$schema": "../gen/schemas/macos-schema.json",
+  "identifier": "macos",
+  "description": "Capability for macOS",
+  "windows": ["main"],
+  "platforms": ["macOS"],
+  "permissions": [
+    {
+      "identifier": "shell:allow-spawn",
+      "allow": [
+        {
+          "name": "bin/ffmpeg",
+          "sidecar": true,
+          "args": true
+        }
+      ]
+    },
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "bin/ffmpeg",
+          "sidecar": true,
+          "args": true
+        }
+      ]
+    }
+  ]
+}

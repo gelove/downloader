@@ -1,0 +1,27 @@
+# [build]
+# beforeDevCommand = { script = "pnpm build_utils_apple && pnpm dev" }
+# beforeBuildCommand = { script = "pnpm build_utils_apple && pnpm build" }
+
+[app]
+macOSPrivateApi = true
+
+[bundle]
+targets = ["dmg"]
+# 通过 resources 打包动态链接库和可执行文件, 比较适合 MacOs universal static binary
+resources = ["bin/macos"]
+# externalBin = ["bin/ai_tool", "bin/ffmpeg"]
+# NOTE: MacOS 动态编译 ffmpeg 报错, 用 mediainfo 代替 ffprobe
+externalBin = ["bin/ffmpeg"]
+
+
+[bundle.macOS]
+frameworks = []
+exceptionDomain = ""
+signingIdentity = "-"
+
+[bundle.macOS.dmg]
+background = "./images/background.png"
+windowSize = { width = 660, height = 400 }
+windowPosition = { x = 200, y = 180 }
+appPosition = { x = 180, y = 170 }
+applicationFolderPosition = { x = 480, y = 170 }

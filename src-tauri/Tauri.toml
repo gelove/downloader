@@ -1,0 +1,77 @@
+productName = "Downloader"
+# mainBinaryName = "downloader"
+identifier = "top.allens.downloader"
+version = "1.0.0"
+
+[build]
+beforeDevCommand = "pnpm dev"
+beforeBuildCommand = "pnpm build"
+frontendDist = "../dist"
+devUrl = "http://localhost:1420"
+
+[app]
+withGlobalTauri = true
+
+[app.security]
+assetProtocol = { enable = true, scope = ["$HOME/**", "$APPCONFIG/**"] }
+# https://jsonplaceholder.typicode.com Example API
+# csp = "default-src 'self' asset:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' asset:; img-src 'self' https: asset:; media-src 'self' asset:; font-src 'self' asset:; connect-src ipc: http://ipc.localhost http://tauri.localhost tauri://localhost https://jsonplaceholder.typicode.com;"
+csp = "default-src 'self' asset:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' asset: http://asset.localhost; img-src 'self' https: asset: http://asset.localhost; media-src 'self' asset: http://asset.localhost; font-src 'self' asset: http://asset.localhost; connect-src ipc: http://ipc.localhost http://tauri.localhost tauri://localhost;"
+# pattern = { use = "isolation", options = { dir = "../dist-isolation" } }
+
+[[app.windows]]
+label = "main"
+title = "Downloader"
+width = 1280
+height = 800
+minWidth = 1280
+minHeight = 800
+visible = true
+resizable = false
+fullscreen = false
+hiddenTitle = true
+transparent = false
+dragDropEnabled = false
+acceptFirstMouse = true
+titleBarStyle = "Overlay"
+# windowEffects = { effects = ["sidebar"], state = "active" }
+
+# [[app.windows]]
+# label = "splashscreen"
+# url = "splashscreen.html"
+# width = 96
+# height = 96
+# decorations = false
+# transparent = true
+
+# [[app.windows]]
+# label = "tray_menu"
+# url = "/tray_menu"
+# width = 192
+# height = 128
+# visible = false
+# decorations = false
+# transparent = true
+
+[bundle]
+createUpdaterArtifacts = true
+active = true
+targets = "all"
+icon = [
+  "icons/32x32.png",
+  "icons/128x128.png",
+  "icons/128x128@2x.png",
+  "icons/icon.icns",
+  "icons/icon.ico",
+]
+
+# 自动更新 不用可注释
+[plugins.updater]
+# 手动打包时公钥需改为你自己的
+pubkey = "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDE1NDA3NzZBNTZGOTkzMDYKUldRR2svbFdhbmRBRmR1Z1hUUTFCTmJvZnpST2h4R0JnYnArOTlYUUpkeG5GMStrdVlIL01vSEQK"
+endpoints = [
+  # "https://releases.myapp.com/{{target}}/{{arch}}/{{current_version}}",
+  # or a static github json file
+  "https://mirror.ghproxy.com/https://github.com/gelove/downloader/releases/download/updater/latest.json",
+  "https://github.com/gelove/downloader/releases/download/updater/latest.json",
+]

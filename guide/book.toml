@@ -1,0 +1,10 @@
+[book]
+authors = ["allen"]
+language = "zh"
+multilingual = false
+src = "src"
+title = "Downloader"
+
+[output.html]
+git-repository-url = "https://github.com/gelove/downloader"
+additional-js = ["theme/custom/onclick.js"]

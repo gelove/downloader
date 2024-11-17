@@ -1,0 +1,29 @@
+{
+  "$schema": "../gen/schemas/windows-schema.json",
+  "identifier": "windows",
+  "description": "Capability for windows",
+  "windows": ["main"],
+  "platforms": ["windows"],
+  "permissions": [
+    {
+      "identifier": "shell:allow-spawn",
+      "allow": [
+        {
+          "name": "ffmpeg",
+          "cmd": "bin/windows/ffmpeg.exe",
+          "args": true
+        }
+      ]
+    },
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "ffmpeg",
+          "cmd": "bin/windows/ffmpeg.exe",
+          "args": true
+        }
+      ]
+    }
+  ]
+}

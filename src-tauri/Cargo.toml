@@ -1,0 +1,84 @@
+[package]
+name = "downloader"
+version = "1.0.0"
+description = "douyin downloader, video and audio transformer"
+authors = ["Allen"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "downloader_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.0.3", features = ["config-toml"] }
+
+[dependencies]
+# async-recursion = "1" # allowe recursion in async functions 
+anyhow = "1.0.93"
+bytes = "1.8.0"
+chrono = "0.4.38"
+dotenv = "0.15.0"
+fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs" }
+futures-util = "0.3.31"
+hex-literal = "0.4.1"
+lazy_static = "1.5.0"
+md-5 = "0.10.6"
+parking_lot = "0.12.3"
+rand = "0.8.5"
+rc4 = "0.1.0"
+reqwest = { version = "0.12.9", features = [
+  "json",
+  "gzip",
+  "stream",
+  "cookies",
+] }
+# rustyscript = { version = "0.8.3", features = ["url_import"] }
+serde = { version = "1.0.215", features = ["derive"] }
+serde_json = "1.0.132"
+serde_urlencoded = "0.7.1"
+sm3 = "0.4.2"
+sysinfo = "0.32.0"
+tauri = { version = "2.1.1", features = [
+  "macos-private-api",
+  "protocol-asset",
+  "config-toml",
+  "devtools",
+  "tray-icon",
+  "unstable",
+] }
+tauri-plugin-fs = "2.0.3"
+tauri-plugin-shell = "2.0.2"
+tauri-plugin-dialog = "2.0.3"
+tauri-plugin-process = "2.0.1"
+# tauri-plugin-log = "2"
+thiserror = "2.0.3"
+toml = { version = "0.8.19", features = ["parse"] }
+tokio = { version = "1.41.1", features = ["full"] }
+tracing = "0.1.40"
+tracing-appender = "0.2.3"
+tracing-error = "0.2.0"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+walkdir = "2.5.0"
+tauri-plugin-os = "2"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+# tauri-plugin-updater = { version = "2.0.2", features = ["rustls-tls"] }
+tauri-plugin-updater = "2.0.2"
+
+[dev-dependencies]
+tauri = { version = "2.1.1", features = ["test"] }
+
+[profile.dev]
+incremental = true # Compile your binary in smaller steps.
+
+[profile.release]
+codegen-units = 1 # Allows LLVM to perform better optimization.
+lto = true        # Enables link-time-optimizations.
+opt-level = "s"   # Prioritizes small binary size. Use `3` if you prefer speed.
+panic = "abort"   # Higher performance by disabling panic handlers.
+strip = true      # Ensures debug symbols are removed.
