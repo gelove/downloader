@@ -34,7 +34,7 @@ export default function Setting() {
   useEffect(() => {
     log.debug("Setting mounted");
     async function init() {
-      const dir = await path.appConfigDir();
+      const dir = await path.appDataDir();
       setConfigDir(() => dir);
     }
     init();

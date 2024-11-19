@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
-import { type as getType } from "@tauri-apps/plugin-os";
-import { appConfigDir, resolve } from "@tauri-apps/api/path";
+// import { type as getType } from "@tauri-apps/plugin-os";
+import { appDataDir, resolve, resolveResource } from "@tauri-apps/api/path";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { Command, open } from "@tauri-apps/plugin-shell";
 import { Media, original, VideoOrientation } from "@/config/constant";
@@ -37,6 +37,13 @@ export async function openWith(path: string, app?: string) {
   return await open(path, app);
 }
 
+function ffmpegCmd(cmdArr: string[]) {
+  // if (getType() === "macos") {
+  //   return Command.sidecar("bin/ffmpeg", cmdArr);
+  // }
+  return Command.create("ffmpeg", cmdArr);
+}
+
 function ffmpegProgress(
   cmd: Command<string>,
   action: string,
@@ -44,9 +51,10 @@ function ffmpegProgress(
   dest: string,
   duration: number,
 ): Command<string> {
+  log.info(`${action} ffmpegProgress: id => ${id}, dest => ${dest}, duration => ${duration}`);
   const appWindow = getCurrentWebviewWindow();
 
-  // 命令执行结束时触发
+  // 命令执行结束或者手动关闭时触发
   cmd.on("close", (_data) => {
     log.info(`${action} ffmpegProgress close`);
     appWindow.emit(action, {
@@ -71,15 +79,19 @@ function ffmpegProgress(
 
   // 标准错误, 无缓冲, 实时输出, 执行 ffmpeg 时指定输出到 stderr 可以实时获取进度
   cmd.stderr.on("data", (line) => {
-    // log.debug('stderr data line =>', line);
+    // log.info('stderr data line =>', line);
     // 通过输出字段获取时间
     if (line.includes("out_time_us=")) {
       // 截取获取微秒数
       const time = line.split("=")[1];
       // 通过转换为秒与媒体总时长来计算百分比
       const _duration = parseInt(time) / 1000000;
+      if (isNaN(_duration)) {
+        return;
+      }
       // log.info("_duration =>", _duration);
       // 计算得到进度比例
+      // NOTE: _duration 总是小于 duration, 得不到 100% 进度
       const progress = (_duration / duration) * 100;
       log.info(`${action}: progress => ${progress}`);
       // 转换为以%号显示的数值
@@ -125,7 +137,7 @@ export function aiToolCmd(dirname: string, modelPath: string) {
 // 执行 python 可执行文件 ai_tool or ai_tool.exe
 // 利用 AI 处理视频实现语言转换和嘴唇同步
 export async function execAiTool(dirname: string) {
-  const modelPath = await resolve(await appConfigDir(), "models", "large-v3");
+  const modelPath = await resolve(await appDataDir(), "models", "large-v3");
   const command = aiToolCmd(dirname, modelPath);
   const appWindow = getCurrentWebviewWindow();
 
@@ -286,10 +298,8 @@ export function videoToLandscapeCmd(
   cmdArr.push(...rest.split(" "));
   cmdArr.push(dest);
   cmdArr.push("-y");
-  if (getType() === "macos") {
-    return Command.sidecar("bin/ffmpeg", cmdArr);
-  }
-  return Command.create("ffmpeg", cmdArr);
+  log.info("videoToLandscapeCmd cmdArr =>", cmdArr.join(" "));
+  return ffmpegCmd(cmdArr);
 }
 
 /**
@@ -323,14 +333,12 @@ export function videoToPortraitCmd(
   cmdArr.push(...rest.split(" "));
   cmdArr.push(dest);
   cmdArr.push("-y");
-  if (getType() === "macos") {
-    return Command.sidecar("bin/ffmpeg", cmdArr);
-  }
-  return Command.create("ffmpeg", cmdArr);
+  log.info("videoToPortraitCmd cmdArr =>", cmdArr.join(" "));
+  return ffmpegCmd(cmdArr);
 }
 
 /**
- * 视频改变方向 (竖屏或者横屏)
+ * 视频转换方向 (竖屏或者横屏)
  * @param video 视频对象
  * @param width 视频宽度
  * @param height 视频高度
@@ -341,33 +349,38 @@ export async function videoChangeOrientation(
   orientation: VideoOrientation,
   dest?: string,
 ) {
-  const { duration, filepath } = video;
-  if (!dest) {
-    dest = filepath;
-  }
-  dest = await invoke<string>("get_output_filepath", { dest });
-  // log.debug('videoToLandscape =>', index);
-  let cmd = null;
-  switch (orientation) {
-    case VideoOrientation.Landscape:
-      cmd = videoToLandscapeCmd(filepath, dest);
-      break;
-    case VideoOrientation.Portrait:
-      cmd = videoToPortraitCmd(filepath, dest);
-      break;
-    default:
-      break;
-  }
-  if (!cmd) {
+  try {
+    const { duration, filepath } = video;
+    if (!dest) {
+      dest = filepath;
+    }
+    dest = await invoke<string>("get_output_filepath", { dest });
+    // log.debug('videoToLandscape =>', index);
+    let cmd = null;
+    switch (orientation) {
+      case VideoOrientation.Landscape:
+        cmd = videoToLandscapeCmd(filepath, dest);
+        break;
+      case VideoOrientation.Portrait:
+        cmd = videoToPortraitCmd(filepath, dest);
+        break;
+      default:
+        break;
+    }
+    if (!cmd) {
+      throw new Error("[视频转换方向]命令创建失败");
+    }
+
+    cmd = ffmpegProgress(cmd, "videoChangeOrientation", taskId, dest, duration);
+
+    // 作为子进程执行命令, 并返回句柄
+    const child = await cmd.spawn();
+    // 将进程对象保存至数组
+    return child;
+  } catch (error) {
+    log.error(`videoChangeOrientation error => ${error}`);
     return;
   }
-
-  cmd = ffmpegProgress(cmd, "videoChangeOrientation", taskId, dest, duration);
-
-  // 作为子进程执行命令, 并返回句柄
-  const child = await cmd.spawn();
-  // 将进程对象保存至数组
-  return child;
 }
 
 /**
@@ -403,10 +416,8 @@ export function extractAudioCmd(
   cmdArr.push("pipe:2");
   cmdArr.push(file.replaceExt(src, ext));
   cmdArr.push("-y");
-  if (getType() === "macos") {
-    return Command.sidecar("bin/ffmpeg", cmdArr);
-  }
-  return Command.create("ffmpeg", cmdArr);
+  log.info("extractAudioCmd cmdArr =>", cmdArr.join(" "));
+  return ffmpegCmd(cmdArr);
 }
 
 /**
@@ -431,10 +442,8 @@ export function extractVideoCmd(src: string, dest: string, start?: string, durat
   cmdArr.push("pipe:2");
   cmdArr.push(dest);
   cmdArr.push("-y");
-  if (getType() === "macos") {
-    return Command.sidecar("bin/ffmpeg", cmdArr);
-  }
-  return Command.create("ffmpeg", cmdArr);
+  log.info("extractVideoCmd cmdArr =>", cmdArr.join(" "));
+  return ffmpegCmd(cmdArr);
 }
 
 /**
@@ -463,15 +472,12 @@ export function splitVideoAndAudioCmd(src: string, dest: string, audioExt: strin
   } else {
     cmdArr.push("copy");
   }
+  cmdArr.push(file.replaceExt(dest, audioExt));
   cmdArr.push("-progress");
   cmdArr.push("pipe:2");
-  cmdArr.push(file.replaceExt(dest, audioExt));
   cmdArr.push("-y");
-  log.debug("splitVideoAndAudioCmd cmdArr =>", cmdArr.join(" "));
-  if (getType() === "macos") {
-    return Command.sidecar("bin/ffmpeg", cmdArr);
-  }
-  return Command.create("ffmpeg", cmdArr);
+  log.info("splitVideoAndAudioCmd cmdArr =>", cmdArr.join(" "));
+  return ffmpegCmd(cmdArr);
 }
 
 // 分离视频与音频
@@ -481,16 +487,25 @@ export async function splitVideoAndAudio(
   audioExt: string = "aac",
   dest?: string,
 ) {
-  const { duration, filepath } = data;
-  if (!dest) {
-    dest = file.addSuffix(filepath, "_split");
+  try {
+    const resourcePath = await resolveResource("bin/macos/ffmpeg");
+    log.info(`splitVideoAndAudio resourcePath=${resourcePath}`);
+    const { duration, filepath } = data;
+    if (!dest) {
+      dest = file.addSuffix(filepath, "_split");
+    }
+    // let cmd = Command.create("ffmpeg", ["-version"]);
+    let cmd = splitVideoAndAudioCmd(filepath, dest, audioExt);
+    if (!cmd) {
+      throw new Error("[分离音视频]命令创建失败");
+    }
+
+    cmd = ffmpegProgress(cmd, "splitVideoAndAudio", taskId, dest, duration);
+    return await cmd.spawn();
+  } catch (error) {
+    log.error(`splitVideoAndAudio error => ${error}`);
+    return;
   }
-  let cmd = splitVideoAndAudioCmd(filepath, dest, audioExt);
-  if (!cmd) {
-    throw new Error(`{分离音视频}命令创建失败`);
-  }
-  cmd = ffmpegProgress(cmd, "splitVideoAndAudio", taskId, dest, duration);
-  return await cmd.spawn();
 }
 
 /**
@@ -523,10 +538,8 @@ export function mergeAudioCmd(video: string, audio: string, dest: string, time?:
   cmdArr.push("pipe:2");
   cmdArr.push(dest);
   cmdArr.push("-y");
-  if (getType() === "macos") {
-    return Command.sidecar("bin/ffmpeg", cmdArr);
-  }
-  return Command.create("ffmpeg", cmdArr);
+  log.info("mergeAudioCmd cmdArr =>", cmdArr.join(" "));
+  return ffmpegCmd(cmdArr);
 }
 
 export async function mergeAudio(
@@ -536,18 +549,24 @@ export async function mergeAudio(
   dest?: string,
   time?: number,
 ) {
-  const { duration, filepath } = data;
-  if (!dest) {
-    dest = filepath;
-  }
-  dest = await invoke<string>("get_output_filepath", { dest });
-  let cmd = mergeAudioCmd(filepath, audio, dest, time);
-  if (!cmd) {
-    log.error(`{合并音频}命令创建失败`);
+  try {
+    const { duration, filepath } = data;
+    if (!dest) {
+      dest = filepath;
+    }
+    dest = await invoke<string>("get_output_filepath", { dest });
+
+    let cmd = mergeAudioCmd(filepath, audio, dest, time);
+    if (!cmd) {
+      throw new Error("[合并音频]命令创建失败");
+    }
+
+    cmd = ffmpegProgress(cmd, "mergeAudio", taskId, dest, duration);
+    return await cmd.spawn();
+  } catch (error) {
+    log.error(`mergeAudio error => ${error}`);
     return;
   }
-  cmd = ffmpegProgress(cmd, "mergeAudio", taskId, dest, duration);
-  return await cmd.spawn();
 }
 
 /**
@@ -580,10 +599,8 @@ export function videoTranscodeCmd(src: string, dest: string, resolution: string)
   cmdArr.push("pipe:2");
   cmdArr.push(dest);
   cmdArr.push("-y");
-  if (getType() === "macos") {
-    return Command.sidecar("bin/ffmpeg", cmdArr);
-  }
-  return Command.create("ffmpeg", cmdArr);
+  log.info("videoTranscodeCmd cmdArr =>", cmdArr.join(" "));
+  return ffmpegCmd(cmdArr);
 }
 
 /**
@@ -613,10 +630,7 @@ export function audioTranscodeCmd(src: string, dest: string, bitRate: string) {
   cmdArr.push(dest);
   cmdArr.push("-y");
   log.info("audioTranscodeCmd cmdArr =>", cmdArr.join(" "));
-  if (getType() === "macos") {
-    return Command.sidecar("bin/ffmpeg", cmdArr);
-  }
-  return Command.create("ffmpeg", cmdArr);
+  return ffmpegCmd(cmdArr);
 }
 
 /**
@@ -638,32 +652,35 @@ export async function transcode(
   // 媒体转换命令: progress是进度条, pipe:2是指定输出到stderr, 如果为1则表示输出到stdout
   // ffmpeg默认输出到stderr, 但进度条必须指定输出, 可以是文件或者上述的stderr或stdout
   // 示例: ffmpeg -i input.mkv -s 640x320 -progress pipe:2 output.mp4
-  const { filename, filepath, duration } = data;
-  if (!outputDir) {
-    outputDir = file.getDir(filepath);
-  }
-  let dest = `${outputDir}/${filename}.${format}`;
-  dest = await invoke<string>("get_output_filepath", { dest });
-  log.info("transcode dest =>", dest);
-  // 获取执行对象（根据数据类型来确定处理的视频还是音频）
-  let cmd;
-  switch (data.kind) {
-    case Media.Audio:
-      cmd = audioTranscodeCmd(filepath, dest, quality);
-      break;
-    case Media.Video:
-      cmd = videoTranscodeCmd(filepath, dest, quality);
-      break;
-  }
+  try {
+    const { filename, filepath, duration } = data;
+    if (!outputDir) {
+      outputDir = file.getDir(filepath);
+    }
+    let dest = `${outputDir}/${filename}.${format}`;
+    dest = await invoke<string>("get_output_filepath", { dest });
+    // log.info("transcode dest =>", dest);
+    // 获取执行对象（根据数据类型来确定处理的视频还是音频）
+    let cmd;
+    switch (data.kind) {
+      case Media.Audio:
+        cmd = audioTranscodeCmd(filepath, dest, quality);
+        break;
+      case Media.Video:
+        cmd = videoTranscodeCmd(filepath, dest, quality);
+        break;
+    }
 
-  if (!cmd) {
-    log.error("transcode cmd create fail");
+    if (!cmd) {
+      throw new Error(`[${Media.Video ? "视频" : "音频"}转码]命令创建失败`);
+    }
+
+    cmd = ffmpegProgress(cmd, "transcode", taskId, dest, duration);
+    // 执行命令为子进程
+    const child = await cmd.spawn();
+    return child;
+  } catch (error) {
+    log.error(`transcode error => ${error}`);
     return;
   }
-
-  cmd = ffmpegProgress(cmd, "transcode", taskId, dest, duration);
-
-  // 执行命令为子进程
-  const child = await cmd.spawn();
-  return child;
 }

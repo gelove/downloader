@@ -19,6 +19,7 @@ DEV.md
 .lh
 .zed
 .idea
+.cargo
 .vscode/*
 !.vscode/extensions.json
 !.vscode/launch.json

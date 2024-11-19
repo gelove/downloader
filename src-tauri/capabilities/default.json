@@ -9,6 +9,8 @@
     "core:menu:default",
     "core:resources:default",
     "core:tray:default",
+    "core:webview:default",
+    "core:webview:allow-create-webview-window",
     "core:window:default",
     "core:window:allow-start-dragging",
     "core:window:allow-close",
@@ -18,21 +20,21 @@
     "core:window:allow-set-always-on-top",
     "core:window:allow-set-focus",
     "core:window:allow-set-position",
-    "core:webview:default",
-    "core:webview:allow-create-webview-window",
     "dialog:default",
     "fs:default",
-    "fs:write-all",
     "fs:read-all",
+    "fs:write-all",
+    "fs:allow-exists",
     "fs:allow-read-text-file",
     "fs:allow-resource-read-recursive",
     {
-      "identifier": "fs:allow-exists",
-      "allow": [{ "path": "$APPDATA/*" }]
-    },
-    {
       "identifier": "fs:scope",
-      "allow": ["$HOME/**", "$RESOURCE/**", "$APPCONFIG/**", "$APPLOG/**"]
+      "allow": [
+        { "path": "$HOME/**" },
+        { "path": "$APPDATA/**" },
+        { "path": "$APPLOG/**" },
+        { "path": "$RESOURCE/**" }
+      ]
     },
     "os:default",
     "process:default",

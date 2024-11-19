@@ -21,6 +21,7 @@ tauri-build = { version = "2.0.3", features = ["config-toml"] }
 # async-recursion = "1" # allowe recursion in async functions 
 anyhow = "1.0.93"
 bytes = "1.8.0"
+cc = "=1.1.31"
 chrono = "0.4.38"
 dotenv = "0.15.0"
 fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs" }
@@ -47,7 +48,7 @@ tauri = { version = "2.1.1", features = [
   "macos-private-api",
   "protocol-asset",
   "config-toml",
-  "devtools",
+  # "devtools",
   "tray-icon",
   "unstable",
 ] }

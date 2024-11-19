@@ -1,7 +1,7 @@
 productName = "Downloader"
 # mainBinaryName = "downloader"
 identifier = "top.allens.downloader"
-version = "1.0.0"
+version = "1.0.1"
 
 [build]
 beforeDevCommand = "pnpm dev"
@@ -13,7 +13,11 @@ devUrl = "http://localhost:1420"
 withGlobalTauri = true
 
 [app.security]
-assetProtocol = { enable = true, scope = ["$HOME/**", "$APPCONFIG/**"] }
+assetProtocol = { enable = true, scope = [
+  "$HOME/**",
+  "$APPDATA/**",
+  "$RESOURCE/**",
+] }
 # https://jsonplaceholder.typicode.com Example API
 # csp = "default-src 'self' asset:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' asset:; img-src 'self' https: asset:; media-src 'self' asset:; font-src 'self' asset:; connect-src ipc: http://ipc.localhost http://tauri.localhost tauri://localhost https://jsonplaceholder.typicode.com;"
 csp = "default-src 'self' asset:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' asset: http://asset.localhost; img-src 'self' https: asset: http://asset.localhost; media-src 'self' asset: http://asset.localhost; font-src 'self' asset: http://asset.localhost; connect-src ipc: http://ipc.localhost http://tauri.localhost tauri://localhost;"

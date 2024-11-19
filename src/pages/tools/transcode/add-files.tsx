@@ -63,7 +63,7 @@ export function AddFiles({ extensions, ids, onSelect }: AddFilesProps) {
         try {
           const file = await fs.open(item, { read: true, write: false });
           const fileInfo = await file.stat();
-          log.info("fileInfo =>", fileInfo);
+          log.debug("fileInfo =>", fileInfo);
           const stdout = await mediaInfoRef.current.analyzeData(
             fileInfo.size,
             makeReadChunkByFs(file),

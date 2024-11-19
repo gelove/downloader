@@ -7,7 +7,7 @@ import { Config } from "@/atoms/config";
 export async function appConfigFile(): Promise<string> {
   // const dir = await path.homeDir();
   // return await resolve(dir, ".luna_ai.toml");
-  const dir = await path.appConfigDir();
+  const dir = await path.appDataDir();
   return await path.resolve(dir, "config.toml");
 }
 

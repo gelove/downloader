@@ -10,7 +10,7 @@
       "allow": [
         {
           "name": "ffmpeg",
-          "cmd": "bin/windows/ffmpeg.exe",
+          "cmd": "$RESOURCE/bin/windows/ffmpeg.exe",
           "args": true
         }
       ]
@@ -20,7 +20,7 @@
       "allow": [
         {
           "name": "ffmpeg",
-          "cmd": "bin/windows/ffmpeg.exe",
+          "cmd": "$RESOURCE/bin/windows/ffmpeg.exe",
           "args": true
         }
       ]

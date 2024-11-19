@@ -9,8 +9,8 @@
       "identifier": "shell:allow-spawn",
       "allow": [
         {
-          "name": "bin/ffmpeg",
-          "sidecar": true,
+          "name": "ffmpeg",
+          "cmd": "$RESOURCE/bin/macos/ffmpeg",
           "args": true
         }
       ]
@@ -19,8 +19,8 @@
       "identifier": "shell:allow-execute",
       "allow": [
         {
-          "name": "bin/ffmpeg",
-          "sidecar": true,
+          "name": "ffmpeg",
+          "cmd": "$RESOURCE/bin/macos/ffmpeg",
           "args": true
         }
       ]

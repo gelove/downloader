@@ -63,7 +63,7 @@ function SelectFiles({ extensions }: { extensions: string[] }) {
         try {
           const file = await fs.open(item, { read: true, write: false });
           const fileInfo = await file.stat();
-          log.info("fileInfo =>", fileInfo);
+          log.debug("fileInfo =>", fileInfo);
           const res = await mediaInfoRef.current.analyzeData(
             fileInfo.size,
             makeReadChunkByFs(file),

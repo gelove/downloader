@@ -1,26 +1,21 @@
-import { useEffect, useCallback } from "react";
-import { useAtom } from "jotai";
+import { useCallback } from "react";
+import { useAtom, useSetAtom } from "jotai";
 
 import { command, shell } from "@/lib/tauri";
 import { log } from "@/lib";
 import { Task, tasksAtom } from "@/atoms/task";
 import { processesAtom } from "@/atoms/process";
 import { AudioAction, VideoOrientation } from "@/config/constant";
+import { noop } from "@/lib/utils";
 
 export const useTasks = () => {
   const [tasks, setTasks] = useAtom(tasksAtom);
-  const [processes, setProcesses] = useAtom(processesAtom);
-
-  useEffect(() => {
-    log.info("useTasks 加载完成", processes.keys());
-    return () => {
-      log.info("useTasks 卸载");
-    };
-  }, []);
+  const setProcesses = useSetAtom(processesAtom);
 
   const run = useCallback(
     async (tasks: Task[]) => {
       for (const task of tasks) {
+        log.info(`[${task.action}]开始执行`);
         let child: shell.Child | undefined;
         switch (task.action) {
           case "audioFormat":
@@ -54,9 +49,13 @@ export const useTasks = () => {
           default:
             break;
         }
-        if (!child) return;
+        log.info(`[${task.action}]创建子进程成功, child => ${JSON.stringify(child)}`);
+        if (!child) {
+          log.error(`[${task.action}]未创建对应命令, child => ${child} `);
+          return;
+        }
         setProcesses((draft) => {
-          draft.set(task.id, child);
+          draft[task.id] = child;
         });
       }
     },
@@ -75,40 +74,37 @@ export const useTasks = () => {
 
   // 删除对应索引数据
   const remove = useCallback(
-    async (id: string) => {
-      log.debug("task remove id =>", id);
+    (id: string) => {
+      log.info("task remove id =>", id);
       setTasks((draft) => {
         const index = draft.findIndex((task) => task.id === id);
         if (index >= 0 && index < draft.length) {
           draft.splice(index, 1);
         }
       });
-      const child = processes.get(id);
-      log.debug("task remove child =>", child);
-      if (!child) return;
-      // 如果已经在转换中，则关闭进程
-      await child.kill();
       // 删除对应任务进程对象
       setProcesses((draft) => {
-        draft.delete(id);
+        draft[id]?.kill().then(noop);
+        delete draft[id];
       });
     },
-    [setTasks, setProcesses],
+    [setProcesses, setTasks],
   );
 
   // 关闭所有任务进程
-  const clear = useCallback(async () => {
+  const clear = useCallback(() => {
     log.info("关闭所有任务进程");
     setTasks((draft) => {
       draft.length = 0;
     });
-    for (const child of processes.values()) {
-      await child.kill();
-    }
     setProcesses((draft) => {
-      draft.clear();
+      Object.keys(draft).forEach((key) => {
+        log.info(`清空所有子进程, child => ${JSON.stringify(draft[key])}`);
+        draft[key]?.kill().then(noop);
+        delete draft[key];
+      });
     });
-  }, [setTasks, setProcesses]);
+  }, [setProcesses, setTasks]);
 
   const update = useCallback(
     (id: string, task: Task) => {
