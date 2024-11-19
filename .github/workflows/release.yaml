@@ -52,7 +52,7 @@ jobs:
             const targetMap = {
               "aarch64-apple-darwin": "ffmpeg-aarch64-apple-darwin",
               "x86_64-apple-darwin": "ffmpeg-x86_64-apple-darwin",
-              "x86_64-pc-windows-msvc": "ffmpeg.exe",
+              "x86_64-pc-windows-msvc": "ffmpeg-x86_64-pc-windows-msvc.exe",
             };
             const assetName = targetMap["${{ matrix.target }}"];
             const { data: release } = await github.rest.repos.getReleaseByTag({
@@ -71,10 +71,10 @@ jobs:
         shell: bash # 强制使用 Bash
         run: |
           if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-            curl -L -o src-tauri/bin/windows/ffmpeg.exe "${{ steps.fetch-asset.outputs.download_url }}"
+            curl -L -o src-tauri/bin/${{ steps.fetch-asset.outputs.name }} "${{ steps.fetch-asset.outputs.download_url }}"
             ls -lR src-tauri/bin
           else
-            curl -L -o src-tauri/bin/macos/ffmpeg "${{ steps.fetch-asset.outputs.download_url }}"
+            curl -L -o src-tauri/bin/${{ steps.fetch-asset.outputs.name }} "${{ steps.fetch-asset.outputs.download_url }}"
             ls -lR src-tauri/bin
           fi
 

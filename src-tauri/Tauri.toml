@@ -1,7 +1,7 @@
 productName = "Downloader"
 # mainBinaryName = "downloader"
 identifier = "top.allens.downloader"
-version = "1.0.1"
+version = "1.0.2"
 
 [build]
 beforeDevCommand = "pnpm dev"
@@ -40,13 +40,13 @@ acceptFirstMouse = true
 titleBarStyle = "Overlay"
 # windowEffects = { effects = ["sidebar"], state = "active" }
 
-# [[app.windows]]
-# label = "splashscreen"
-# url = "splashscreen.html"
-# width = 96
-# height = 96
-# decorations = false
-# transparent = true
+[[app.windows]]
+label = "splashscreen"
+url = "splashscreen.html"
+width = 96
+height = 96
+decorations = false
+transparent = true
 
 # [[app.windows]]
 # label = "tray_menu"

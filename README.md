@@ -44,15 +44,16 @@ cd downloader
 pnpm i
 
 # 将 ffmpeg 可执行文件复制到项目目录
-# macOS 平台将 ffmpeg 作为 sidecar 打包到程序中
-# cp ffmpeg-aarch64-apple-darwin ./src-tauri/bin/macos/ffmpeg-aarch64-apple-darwin
-# cp ffmpeg-x86_64-apple-darwin ./src-tauri/bin/ffmpeg-x86_64-apple-darwin
 # macOS 平台将 ffmpeg 作为资源文件打包到程序中 根据你的系统架构选择 ffmpeg 可执行文件
-cp ffmpeg-aarch64-apple-darwin ./src-tauri/bin/macos/ffmpeg
-# 或者
-cp ffmpeg-x86_64-apple-darwin ./src-tauri/bin/macos/ffmpeg
+# cp ffmpeg-aarch64-apple-darwin ./src-tauri/bin/macos/ffmpeg
+# cp ffmpeg-x86_64-apple-darwin ./src-tauri/bin/macos/ffmpeg
 # windows 平台将 ffmpeg 作为资源文件打包到程序中
-cp ffmpeg.exe ./src-tauri/bin/windows/ffmpeg.exe
+# cp ffmpeg.exe ./src-tauri/bin/windows/ffmpeg.exe
+# macOS 平台将 ffmpeg 作为 sidecar 打包到程序中
+cp ffmpeg-aarch64-apple-darwin ./src-tauri/bin/ffmpeg-aarch64-apple-darwin
+cp ffmpeg-x86_64-apple-darwin ./src-tauri/bin/ffmpeg-x86_64-apple-darwin
+# windows 平台将 ffmpeg 作为 sidecar 打包到程序中
+cp ffmpeg.exe ./src-tauri/bin/ffmpeg-x86_64-pc-windows-msvc.exe
 
 # 创建 tauri 程序密钥, 自动更新插件需要, 如不需要在 Tauri.toml 中注释掉
 # ~/.tauri/downloader.key 私钥

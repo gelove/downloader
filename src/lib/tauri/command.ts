@@ -41,7 +41,8 @@ function ffmpegCmd(cmdArr: string[]) {
   // if (getType() === "macos") {
   //   return Command.sidecar("bin/ffmpeg", cmdArr);
   // }
-  return Command.create("ffmpeg", cmdArr);
+  // return Command.create("ffmpeg", cmdArr);
+  return Command.sidecar("bin/ffmpeg", cmdArr);
 }
 
 function ffmpegProgress(

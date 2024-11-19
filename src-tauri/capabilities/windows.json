@@ -9,8 +9,8 @@
       "identifier": "shell:allow-spawn",
       "allow": [
         {
-          "name": "ffmpeg",
-          "cmd": "$RESOURCE/bin/windows/ffmpeg.exe",
+          "name": "bin/ffmpeg",
+          "sidecar": true,
           "args": true
         }
       ]
@@ -19,8 +19,8 @@
       "identifier": "shell:allow-execute",
       "allow": [
         {
-          "name": "ffmpeg",
-          "cmd": "$RESOURCE/bin/windows/ffmpeg.exe",
+          "name": "bin/ffmpeg",
+          "sidecar": true,
           "args": true
         }
       ]
