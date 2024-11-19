@@ -6,7 +6,6 @@
 macOSPrivateApi = true
 
 [bundle]
-targets = ["dmg"]
 # 通过 resources 打包动态链接库和可执行文件, 比较适合 MacOs universal static binary
 # resources = ["bin/macos/"]
 # externalBin = ["bin/ai_tool", "bin/ffmpeg"]

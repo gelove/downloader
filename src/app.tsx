@@ -13,7 +13,7 @@ import { router } from "@/config/router";
 import { useTheme } from "@/hooks/use-theme";
 import { useConfig } from "@/hooks/use-config";
 import { useTasks } from "@/hooks/use-tasks";
-import { closeSplashscreen, disableWindowMenu } from "@/lib/windows";
+import { disableWindowMenu } from "@/lib/windows";
 import { log } from "@/lib";
 import { getVersion } from "@/lib/utils";
 // import { event, webviewWindow, window as tauriWindow } from "@/lib/tauri";
@@ -45,7 +45,7 @@ export default function App() {
 
   useEffect(() => {
     log.debug("app mounted", getVersion());
-    closeSplashscreen();
+    // closeSplashscreen();
 
     // const fn = async () => {
     //   const win = await openWindow({

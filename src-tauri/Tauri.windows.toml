@@ -3,7 +3,6 @@
 # beforeBuildCommand = { script = "pnpm build_utils_windows && pnpm build" }
 
 [bundle]
-targets = ["nsis"]
 # 通过 resources 打包动态链接库和可执行文件, 可以动态编译 ffmpeg ffprobe 以减少体积
 # resources = ["bin/windows/"]
 # externalBin = ["bin/ai_tool", "bin/ffmpeg"]

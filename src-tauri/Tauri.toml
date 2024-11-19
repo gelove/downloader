@@ -28,8 +28,7 @@ label = "main"
 title = "Downloader"
 width = 1280
 height = 800
-minWidth = 1280
-minHeight = 800
+center = true
 visible = true
 resizable = false
 fullscreen = false
@@ -40,13 +39,13 @@ acceptFirstMouse = true
 titleBarStyle = "Overlay"
 # windowEffects = { effects = ["sidebar"], state = "active" }
 
-[[app.windows]]
-label = "splashscreen"
-url = "splashscreen.html"
-width = 96
-height = 96
-decorations = false
-transparent = true
+# [[app.windows]]
+# label = "splashscreen"
+# url = "splashscreen.html"
+# width = 96
+# height = 96
+# decorations = false
+# transparent = true
 
 # [[app.windows]]
 # label = "tray_menu"
