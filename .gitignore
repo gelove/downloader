@@ -29,6 +29,7 @@ DEV.md
 *.njsproj
 *.sln
 *.sw?
+latest.json
 
 # Environment files
 .env

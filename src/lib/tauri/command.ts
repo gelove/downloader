@@ -52,12 +52,12 @@ function ffmpegProgress(
   dest: string,
   duration: number,
 ): Command<string> {
-  log.info(`${action} ffmpegProgress: id => ${id}, dest => ${dest}, duration => ${duration}`);
+  log.info(`${action}-${id} ffmpegProgress: dest => ${dest}, duration => ${duration}`);
   const appWindow = getCurrentWebviewWindow();
 
   // 命令执行结束或者手动关闭时触发
   cmd.on("close", (_data) => {
-    log.info(`${action} ffmpegProgress close`);
+    log.info(`${action}-${id} ffmpegProgress close`);
     appWindow.emit(action, {
       id,
       status: CmdStatus.Closed,
@@ -75,7 +75,7 @@ function ffmpegProgress(
 
   // 标准输出, 行缓冲, 不实时输出
   cmd.stdout.on("data", (line) => {
-    log.info(`${action} stdout data line => ${line}`);
+    log.info(`${action}-${id} stdout data line => ${line}`);
   });
 
   // 标准错误, 无缓冲, 实时输出, 执行 ffmpeg 时指定输出到 stderr 可以实时获取进度
@@ -94,7 +94,7 @@ function ffmpegProgress(
       // 计算得到进度比例
       // NOTE: _duration 总是小于 duration, 得不到 100% 进度
       const progress = (_duration / duration) * 100;
-      log.info(`${action}: progress => ${progress}`);
+      log.info(`${action}-${id}: progress => ${progress}`);
       // 转换为以%号显示的数值
       appWindow.emit(action, {
         id,
@@ -105,7 +105,7 @@ function ffmpegProgress(
 
     // 转码结束赋值为100%
     if (line.includes("progress=end")) {
-      log.info(`${action} ffmpegProgress end`);
+      log.info(`${action}-${id} ffmpegProgress end`);
       appWindow.emit(action, {
         id,
         progress: 100,

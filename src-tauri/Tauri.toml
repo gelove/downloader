@@ -1,7 +1,7 @@
 productName = "Downloader"
 # mainBinaryName = "downloader"
 identifier = "top.allens.downloader"
-version = "1.0.2"
+version = "1.0.3"
 
 [build]
 beforeDevCommand = "pnpm dev"

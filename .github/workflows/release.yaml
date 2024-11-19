@@ -75,6 +75,7 @@ jobs:
             ls -lR src-tauri/bin
           else
             curl -L -o src-tauri/bin/${{ steps.fetch-asset.outputs.name }} "${{ steps.fetch-asset.outputs.download_url }}"
+            chmod +x src-tauri/bin/${{ steps.fetch-asset.outputs.name }}
             ls -lR src-tauri/bin
           fi
 
