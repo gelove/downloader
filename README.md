@@ -45,8 +45,12 @@ pnpm i
 
 # 将 ffmpeg 可执行文件复制到项目目录
 # macOS 平台将 ffmpeg 作为 sidecar 打包到程序中
-cp ffmpeg-aarch64-apple-darwin ./src-tauri/bin/ffmpeg-aarch64-apple-darwin
-cp ffmpeg-x86_64-apple-darwin ./src-tauri/bin/ffmpeg-x86_64-apple-darwin
+# cp ffmpeg-aarch64-apple-darwin ./src-tauri/bin/macos/ffmpeg-aarch64-apple-darwin
+# cp ffmpeg-x86_64-apple-darwin ./src-tauri/bin/ffmpeg-x86_64-apple-darwin
+# macOS 平台将 ffmpeg 作为资源文件打包到程序中 根据你的系统架构选择 ffmpeg 可执行文件
+cp ffmpeg-aarch64-apple-darwin ./src-tauri/bin/macos/ffmpeg
+# 或者
+cp ffmpeg-x86_64-apple-darwin ./src-tauri/bin/macos/ffmpeg
 # windows 平台将 ffmpeg 作为资源文件打包到程序中
 cp ffmpeg.exe ./src-tauri/bin/windows/ffmpeg.exe
 
