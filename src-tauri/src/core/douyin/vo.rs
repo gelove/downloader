@@ -23,6 +23,7 @@ pub struct Video {
     pub ratio: String,
     pub cover: String,
     pub nickname: String,
+    pub tags: String,
     pub is_top: u64,
     pub likes: u64,
     pub duration: u64,

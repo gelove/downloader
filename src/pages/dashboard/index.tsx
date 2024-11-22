@@ -127,7 +127,6 @@ export default function Dashboard({}: Props) {
             log.error(`handleListen Closed 参数错误, id=${id}`);
             return;
           }
-          log.info("cmd closed", id);
           break;
         case CmdStatus.Error:
           if (!id) {

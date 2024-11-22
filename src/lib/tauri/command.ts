@@ -57,7 +57,7 @@ function ffmpegProgress(
 
   // 命令执行结束或者手动关闭时触发
   cmd.on("close", (_data) => {
-    log.info(`${action}-${id} ffmpegProgress close`);
+    log.info(`${action}-${id} ffmpegProgress: close`);
     appWindow.emit(action, {
       id,
       status: CmdStatus.Closed,
@@ -75,7 +75,7 @@ function ffmpegProgress(
 
   // 标准输出, 行缓冲, 不实时输出
   cmd.stdout.on("data", (line) => {
-    log.info(`${action}-${id} stdout data line => ${line}`);
+    log.info(`${action}-${id} ffmpegProgress: stdout line => ${line}`);
   });
 
   // 标准错误, 无缓冲, 实时输出, 执行 ffmpeg 时指定输出到 stderr 可以实时获取进度
@@ -94,7 +94,7 @@ function ffmpegProgress(
       // 计算得到进度比例
       // NOTE: _duration 总是小于 duration, 得不到 100% 进度
       const progress = (_duration / duration) * 100;
-      log.info(`${action}-${id}: progress => ${progress}`);
+      log.info(`${action}-${id} ffmpegProgress: ${progress}`);
       // 转换为以%号显示的数值
       appWindow.emit(action, {
         id,
@@ -105,7 +105,7 @@ function ffmpegProgress(
 
     // 转码结束赋值为100%
     if (line.includes("progress=end")) {
-      log.info(`${action}-${id} ffmpegProgress end`);
+      log.info(`${action}-${id} ffmpegProgress: end`);
       appWindow.emit(action, {
         id,
         progress: 100,
@@ -299,7 +299,7 @@ export function videoToLandscapeCmd(
   cmdArr.push(...rest.split(" "));
   cmdArr.push(dest);
   cmdArr.push("-y");
-  log.info("videoToLandscapeCmd cmdArr =>", cmdArr.join(" "));
+  log.info(`videoToLandscapeCmd cmdArr => ${cmdArr.join(" ")}`);
   return ffmpegCmd(cmdArr);
 }
 
@@ -334,7 +334,7 @@ export function videoToPortraitCmd(
   cmdArr.push(...rest.split(" "));
   cmdArr.push(dest);
   cmdArr.push("-y");
-  log.info("videoToPortraitCmd cmdArr =>", cmdArr.join(" "));
+  log.info(`videoToPortraitCmd cmdArr => ${cmdArr.join(" ")}`);
   return ffmpegCmd(cmdArr);
 }
 
@@ -417,7 +417,7 @@ export function extractAudioCmd(
   cmdArr.push("pipe:2");
   cmdArr.push(file.replaceExt(src, ext));
   cmdArr.push("-y");
-  log.info("extractAudioCmd cmdArr =>", cmdArr.join(" "));
+  log.info(`extractAudioCmd cmdArr => ${cmdArr.join(" ")}`);
   return ffmpegCmd(cmdArr);
 }
 
@@ -443,7 +443,7 @@ export function extractVideoCmd(src: string, dest: string, start?: string, durat
   cmdArr.push("pipe:2");
   cmdArr.push(dest);
   cmdArr.push("-y");
-  log.info("extractVideoCmd cmdArr =>", cmdArr.join(" "));
+  log.info(`extractVideoCmd cmdArr => ${cmdArr.join(" ")}`);
   return ffmpegCmd(cmdArr);
 }
 
@@ -477,7 +477,7 @@ export function splitVideoAndAudioCmd(src: string, dest: string, audioExt: strin
   cmdArr.push("-progress");
   cmdArr.push("pipe:2");
   cmdArr.push("-y");
-  log.info("splitVideoAndAudioCmd cmdArr =>", cmdArr.join(" "));
+  log.info(`splitVideoAndAudioCmd cmdArr => ${cmdArr.join(" ")}`);
   return ffmpegCmd(cmdArr);
 }
 
@@ -539,7 +539,7 @@ export function mergeAudioCmd(video: string, audio: string, dest: string, time?:
   cmdArr.push("pipe:2");
   cmdArr.push(dest);
   cmdArr.push("-y");
-  log.info("mergeAudioCmd cmdArr =>", cmdArr.join(" "));
+  log.info(`mergeAudioCmd cmdArr => ${cmdArr.join(" ")}`);
   return ffmpegCmd(cmdArr);
 }
 
@@ -600,7 +600,7 @@ export function videoTranscodeCmd(src: string, dest: string, resolution: string)
   cmdArr.push("pipe:2");
   cmdArr.push(dest);
   cmdArr.push("-y");
-  log.info("videoTranscodeCmd cmdArr =>", cmdArr.join(" "));
+  log.info(`videoTranscodeCmd cmdArr => ${cmdArr.join(" ")}`);
   return ffmpegCmd(cmdArr);
 }
 
@@ -630,7 +630,7 @@ export function audioTranscodeCmd(src: string, dest: string, bitRate: string) {
   cmdArr.push("pipe:2");
   cmdArr.push(dest);
   cmdArr.push("-y");
-  log.info("audioTranscodeCmd cmdArr =>", cmdArr.join(" "));
+  log.info(`audioTranscodeCmd cmdArr => ${cmdArr.join(" ")}`);
   return ffmpegCmd(cmdArr);
 }
 

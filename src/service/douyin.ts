@@ -18,6 +18,7 @@ export type Video = {
   desc: string;
   ratio: string;
   cover: string;
+  tags: string;
   is_top: number;
   likes: number;
   duration: number;
@@ -66,6 +67,7 @@ export async function download(
   id: string,
   url: string,
   title: string,
+  tags: string,
   fileName: string,
   savePath: string,
 ) {
@@ -73,6 +75,7 @@ export async function download(
     id,
     url,
     title,
+    tags,
     fileName,
     savePath,
   });

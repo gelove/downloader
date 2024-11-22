@@ -151,7 +151,14 @@ export default function Douyin() {
   }, [config]);
 
   const handleDownload = useCallback(
-    async (id: string, url: string, title: string, downloadDir: string, userName: string) => {
+    async (
+      id: string,
+      url: string,
+      title: string,
+      tags: string,
+      downloadDir: string,
+      userName: string,
+    ) => {
       try {
         // 使用正则过滤掉非字母、数字、下划线以及中文字符的文本
         // const userName = nickname.replace(/[^\w\u4e00-\u9fa5]+/g, "");
@@ -162,7 +169,7 @@ export default function Douyin() {
         setVideoStates((draft) => {
           draft[id] = { id, progress: 0, status: DownloadStatus.Loading };
         });
-        const filepath = await douyin.download(id, url, title, fileName, savePath);
+        const filepath = await douyin.download(id, url, title, tags, fileName, savePath);
         log.debug("handleDownloadOne: filepath =>", filepath);
         setVideoStates((draft) => {
           draft[id].status = DownloadStatus.Done;
@@ -186,7 +193,7 @@ export default function Douyin() {
         toast.error("用户信息获取失败");
         return;
       }
-      const { id = "", url = "", title = "" } = e.currentTarget.dataset;
+      const { id = "", url = "", title = "", tags = "" } = e.currentTarget.dataset;
       if (!id || !url) {
         log.error("handleDownloadOne: missing data", e.currentTarget.dataset);
         toast.error("下载视频缺少必要参数");
@@ -198,7 +205,7 @@ export default function Douyin() {
         return;
       }
       // 使用正则过滤掉非字母、数字、下划线以及中文字符的文本
-      await handleDownload(id, url, title, downloadDir, userName);
+      await handleDownload(id, url, title, tags, downloadDir, userName);
     },
     [userName, getDownloadDir, handleDownload],
   );
@@ -258,12 +265,12 @@ export default function Douyin() {
       const list = allRows.current.filter((video) => !videoStates[video.id]?.filepath);
       // log.debug("handleDownloadPatch: list =>", list);
       for (const video of list) {
-        const { id, url, title } = video;
+        const { id, url, title, desc, tags } = video;
         if (!id || !url) {
           log.error("handleDownloadPatch: 下载视频缺少必要数据", video);
           continue;
         }
-        await handleDownload(id, url, title, downloadDir, userName);
+        await handleDownload(id, url, title || desc, tags, downloadDir, userName);
       }
       toast.success("全部下载完成");
     } catch (err) {
@@ -336,7 +343,7 @@ export default function Douyin() {
                       {video.cover && (
                         <img
                           src={video.cover}
-                          alt={video.title || video.desc}
+                          alt={video.title}
                           className="h-full w-full object-cover"
                         />
                       )}
@@ -364,7 +371,8 @@ export default function Douyin() {
                             <button
                               data-id={video.id}
                               data-url={video.url}
-                              data-title={video.desc}
+                              data-title={video.title}
+                              data-tags={video.tags}
                               onClick={handleDownloadOne}
                               className="rounded-full bg-primary p-2 text-primary-foreground transition-colors hover:bg-primary/90">
                               <Download size={24} />
@@ -382,7 +390,7 @@ export default function Douyin() {
                       )}
                     </div>
                     <div className="p-1">
-                      <p className="mb-1 line-clamp-2 text-sm">{video.desc}</p>
+                      <p className="mb-1 line-clamp-2 text-sm">{video.title}</p>
                     </div>
                   </div>
                 ))}

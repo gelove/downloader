@@ -142,7 +142,7 @@ pub async fn get_videos_by_uid(
     if res_text.is_empty() {
         return Err(CustomErr::ResponseBodyIsEmpty);
     }
-
+    // tracing::info!("{}", res_text);
     let raw = serde_json::from_str::<serde_json::Value>(&res_text)?;
     // tracing::info!(?raw, "get_videos_by_uid:");
     let status_code = raw["status_code"].as_u64().unwrap_or(0_u64);
@@ -176,11 +176,29 @@ pub async fn get_videos_by_uid(
                     .to_string(),
             };
             // let url = url.replace("playwm", "play");
+            let title: String = if item["item_title"].as_str().unwrap_or("").len() > 0 {
+                item["item_title"].as_str().unwrap_or("").to_string()
+            } else {
+                item["desc"].as_str().unwrap_or("").to_string()
+            };
             Video {
-                url,
                 id: item["aweme_id"].as_str().unwrap_or("").to_string(),
-                title: item["preview_title"].as_str().unwrap_or("").to_string(),
+                url,
+                title,
                 desc: item["desc"].as_str().unwrap_or("").to_string(),
+                tags: item["text_extra"]
+                    .as_array()
+                    .unwrap_or(&vec![])
+                    .to_vec()
+                    .iter()
+                    .map(|val| {
+                        val["hashtag_name"]
+                            .as_str()
+                            .map(|name| format!("#{}", name))
+                            .unwrap_or("".to_string())
+                    })
+                    .collect::<Vec<String>>()
+                    .join(" "),
                 ratio: item["video"]["ratio"].as_str().unwrap_or("").to_string(),
                 cover: item["video"]["cover"]["url_list"][0]
                     .as_str()
@@ -248,6 +266,7 @@ pub async fn get_user_by_ies(sec_user_id: &str) -> Result<UserResp> {
 pub async fn download<F>(
     url: &str,
     title: &str,
+    tags: &str,
     file_name: &str,
     save_path: &str,
     call_back: CallBackClosure<F>,
@@ -294,9 +313,10 @@ where
         call_back.call(downloaded_len, res_len)?;
     }
 
-    // let title_path: std::path::PathBuf = Path::new(save_path).join("title.txt");
-    // let mut f = File::create(&title_path)?;
-    // f.write_all(title.as_bytes())?;
+    let title_path = save_path.join(file_name.replace("mp4", "txt"));
+    let mut f = File::create(&title_path)?;
+    let content = format!("{}\n{}\n", title, tags);
+    f.write_all(content.as_bytes())?;
 
     let filepath = filepath
         .to_str()

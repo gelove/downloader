@@ -92,9 +92,9 @@ export const VideoList = () => {
                     borderRadius: "5px",
                     textAlign: "center",
                   }}>
-                  <h3>{`${video.desc}`}</h3>
+                  <h3>{`${video.title}`}</h3>
                   <h3>{`${video.create_time}`}</h3>
-                  <img src={video.cover} alt={video.desc} />
+                  <img src={video.cover} alt={video.title} />
                   {/* <a href={video.url}>{video.url}</a> */}
                 </div>
               ))}

@@ -32,6 +32,7 @@ pub async fn download(
     id: &str,
     url: &str,
     title: &str,
+    tags: &str,
     file_name: &str,
     save_path: &str,
 ) -> Result<String> {
@@ -47,5 +48,5 @@ pub async fn download(
         )?;
         Ok(())
     });
-    api::download(url, title, file_name, save_path, save).await
+    api::download(url, title, tags, file_name, save_path, save).await
 }
