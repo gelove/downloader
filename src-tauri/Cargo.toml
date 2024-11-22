@@ -1,6 +1,6 @@
 [package]
 name = "downloader"
-version = "1.0.3"
+version = "1.0.4"
 description = "douyin downloader, video and audio transformer"
 authors = ["Allen"]
 edition = "2021"
@@ -21,6 +21,7 @@ tauri-build = { version = "2.0.3", features = ["config-toml"] }
 # async-recursion = "1" # allowe recursion in async functions 
 anyhow = "1.0.93"
 bytes = "1.8.0"
+# 强制 cc = "=1.1.31" 版本，否则会导致编译失败
 cc = "=1.1.31"
 chrono = "0.4.38"
 dotenv = "0.15.0"
