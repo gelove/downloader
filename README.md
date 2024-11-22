@@ -17,6 +17,26 @@ Downloader 是一个跨平台的抖音视频下载器，目前支持 macOS 与 w
 
 [下载](https://github.com/gelove/downloader/releases)最新版本的安装包，解压后运行安装程序即可。
 
+**出现以下警告是正常的, 请点击取消即可**
+
+<img src="public/image1.png" class="my-4 m-auto w-[300px]" />
+
+**然后在设置中允许打开就OK了**
+
+<img src="public/image2.png" class="my-4"/>
+
+**然后会再次弹出一次警告**
+
+<img src="public/image3.png" class="my-4 m-auto w-[300px]"/>
+
+**点击打开后进入程序界面**
+
+**程序打开报损坏则继续在设置中允许打开或者在终端输入以下命令**
+
+```sh
+xattr -c /Applications/Downloader.app
+```
+
 ## 手动编译
 
 **如需手动编译，请确保已安装 Rust 与 Typescript 开发环境。**
