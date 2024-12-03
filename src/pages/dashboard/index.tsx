@@ -1,5 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useCallback } from "react";
 import { useImmer } from "use-immer";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
@@ -14,7 +13,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button, toast } from "@/components/ui";
-import { command, event, shell, updater } from "@/lib/tauri";
+import { command, event, shell } from "@/lib/tauri";
 import { file, log } from "@/lib";
 import { TaskStatus } from "@/atoms/task";
 import { CmdStatus, ProgressResult } from "@/lib/tauri/command";
@@ -24,18 +23,16 @@ import { Trash2 } from "@/components/common/icons";
 export type Props = {};
 
 export default function Dashboard({}: Props) {
-  const navigate = useNavigate();
   const parentRef = useRef<HTMLDivElement>(null);
-  const [contentLength, setContentLength] = useState<number>();
-  // const [chunkLength, setChunkLength] = useState<number>();
-  const [updateProgress, setUpdateProgress] = useState(0);
+  // const [contentLength, setContentLength] = useState<number>();
+  // const [updateProgress, setUpdateProgress] = useState(0);
   const [progress, setProgress] = useImmer<Map<string, number>>(new Map());
   const { tasks, clear, remove, setTasks } = useTasks();
 
   useEffect(() => {
-    log.info("Dashboard 组件加载完成");
+    log.debug("Dashboard 组件加载完成");
     return () => {
-      log.info("Dashboard 组件卸载");
+      log.debug("Dashboard 组件卸载");
     };
   }, []);
 
@@ -168,51 +165,6 @@ export default function Dashboard({}: Props) {
     };
   }, [handleListen]);
 
-  useEffect(() => {
-    const gotoListener = event.listen("goto", async (e) => {
-      const route = e.payload as string;
-      log.debug("goto", route);
-      navigate(route);
-    });
-
-    const updateListener = event.listen("update", async (_) => {
-      const update = await updater.check();
-      if (!update?.available) {
-        toast.success("Currently on the Latest Version");
-        return;
-      }
-      update.downloadAndInstall((e) => {
-        // 打开下载进度条
-        log.debug("update", e);
-        if (e.event === "Started") {
-          log.debug("update Started contentLength =>", e.data.contentLength);
-          setContentLength(e.data.contentLength);
-          setUpdateProgress(0);
-          return;
-        }
-        if (e.event === "Progress") {
-          log.debug("update progress chunkLength =>", e.data.chunkLength);
-          // setChunkLength(e.data.chunkLength);
-          if (contentLength) {
-            setUpdateProgress((e.data.chunkLength / contentLength) * 100);
-          }
-          return;
-        }
-        if (e.event === "Finished") {
-          log.debug("update Finished");
-          setUpdateProgress(100);
-        }
-      });
-    });
-
-    return () => {
-      log.debug("app unmounted");
-      gotoListener.then((fn) => fn());
-      updateListener.then((fn) => fn());
-      // focusChange.current && focusChange.current();
-    };
-  }, []);
-
   const rowVirtualizer = useVirtualizer({
     count: tasks.length,
     getScrollElement: () => parentRef.current,
@@ -290,7 +242,7 @@ export default function Dashboard({}: Props) {
             })}
           </TableBody>
         </Table>
-        {updateProgress > 0 && <div>Downloading Update {updateProgress}%</div>}
+        {/* {updateProgress > 0 && <div>Downloading Update {updateProgress}%</div>} */}
       </div>
       <div className="mb-4 flex items-center justify-end">
         <Button onClick={handleClear} variant="destructive">

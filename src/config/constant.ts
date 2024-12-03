@@ -1,6 +1,12 @@
 export const appName = "Luna AI";
 export const storePrefix = "luna-ai-";
 
+export const Shortcuts = {
+  Setting: "CmdOrCtrl+,",
+  Update: "CmdOrCtrl+U",
+  Quit: "CmdOrCtrl+Q",
+} as const;
+
 // const obj = {
 //   k1: "foo",
 //   k2: "bar",

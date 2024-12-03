@@ -56,7 +56,7 @@ export function toggleFullscreen() {
   };
 }
 
-interface WindowConfig {
+type WindowConfig = {
   label: string;
   title?: string;
   url?: string;
@@ -80,7 +80,7 @@ interface WindowConfig {
   skipTaskbar?: boolean;
   hideWhenBlur?: boolean;
   acceptFirstMouse?: boolean;
-}
+};
 
 // 系统参数配置
 export const windowConfig: WindowConfig = {
@@ -100,6 +100,7 @@ export const windowConfig: WindowConfig = {
   resizable: true, // 是否支持缩放
   maximized: false, // 最大化窗口
   fullscreen: false, // 窗口是否全屏
+  decorations: false, // 窗口是否显示边框
   hiddenTitle: true, // 隐藏标题栏
   transparent: true, // 窗口是否透明
   skipTaskbar: false, // 窗口是否显示在任务栏
@@ -110,42 +111,46 @@ export const windowConfig: WindowConfig = {
 // 打开视频播放窗口
 export async function openWindow(options: WindowConfig) {
   const args = { ...windowConfig, ...options };
-  if (!args.label) {
-    log.error("createWin: missing label");
+  const { label, hideWhenBlur, ...rest } = args;
+  if (!label) {
+    log.error("openWindow: missing label");
     return;
   }
 
   // 判断窗口是否存在
-  const existWin = await webviewWindow.WebviewWindow.getByLabel(args.label);
+  const existWin = await webviewWindow.WebviewWindow.getByLabel(label);
   if (existWin) {
     // await existWin.unminimize();
-    // await existWin.show();
-    // await existWin.setFocus();
+    await existWin.show();
+    await existWin.setFocus();
     // await existWin.setFullscreen(args.fullscreen ?? false);
     return;
   }
 
   // 创建新的 WebviewWindow，指定唯一的窗口标识符
-  let win = new webviewWindow.WebviewWindow(args.label, args);
+  let win = new webviewWindow.WebviewWindow(label, rest);
 
   // 监听窗口是否创建完毕
   win.once("tauri://created", () => {
-    log.debug(`${args.label} window created`);
+    log.debug(`openWindow: ${label} window created`);
   });
 
   // 监听窗口是否出错
   win.once("tauri://error", (e) => {
-    log.error(`${args.label} window create failed`, e);
+    log.error(`openWindow: ${label} window create failed`, e);
   });
 
   // 监听窗口关闭事件
   win.once("tauri://close-requested", () => {
-    log.debug(`${args.label} window closed`);
+    log.debug(`openWindow: ${label} window closed`);
+    // thread 'tokio-runtime-worker' panicked at /Users/allen/.cargo/registry/src/github.com-1ecc6299db9ec823/wry-0.47.0/src/wkwebview/class/wry_web_view.rs:152:10:
+    // tried to access uninitialized instance variable
+    // win.close();
   });
 
-  if (args.hideWhenBlur) {
+  if (hideWhenBlur) {
     win.listen("tauri://blur", async (e) => {
-      log.debug("window blur", e);
+      log.debug("openWindow: window blur", e);
       await win.hide();
     });
   }

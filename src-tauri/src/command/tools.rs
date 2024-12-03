@@ -78,10 +78,8 @@ pub fn close_splashscreen(window: Window, _handle: AppHandle) -> Result<()> {
     tracing::info!("close_splashscreen");
     if let Some(splashscreen) = window.get_webview_window("splashscreen") {
         // tracing::info!("close splashscreen");
-        // splashscreen.hide()?;
         splashscreen.close()?;
     }
-    // Show main window
     window
         .get_webview_window("main")
         // .ok_or(CustomErr::WindowNotFound(std::backtrace::Backtrace::capture()))?

@@ -3,6 +3,10 @@ import path from "path";
 import react from "@vitejs/plugin-react";
 // import { viteStaticCopy } from "vite-plugin-static-copy";
 
+const ENV = process.env;
+const platform = ENV.TAURI_ENV_PLATFORM;
+const debug = ENV.TAURI_ENV_DEBUG === "true";
+
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
   plugins: [
@@ -37,5 +41,14 @@ export default defineConfig(async () => ({
     alias: {
       "@": path.resolve(__dirname, "src"),
     },
+  },
+
+  build: {
+    // Tauri uses WebKit on macOS and Chromium on Windows and Linux
+    target: platform == "darwin" ? "safari13" : "chrome105",
+    // don't minify for debug builds
+    minify: !debug,
+    // produce sourcemaps for debug builds
+    sourcemap: debug,
   },
 }));

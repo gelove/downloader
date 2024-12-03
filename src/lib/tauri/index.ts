@@ -5,6 +5,7 @@ export * as window from "@tauri-apps/api/window";
 export * as webviewWindow from "@tauri-apps/api/webviewWindow";
 export * as dialog from "@tauri-apps/plugin-dialog";
 export * as fs from "@tauri-apps/plugin-fs";
+export * as globalShortcut from "@tauri-apps/plugin-global-shortcut";
 // export * as log from "@tauri-apps/plugin-log";
 export * as process from "@tauri-apps/plugin-process";
 export * as shell from "@tauri-apps/plugin-shell";

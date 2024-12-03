@@ -1,6 +1,4 @@
-// import { ReactNode, Suspense } from "react";
 import { useLocation, Outlet } from "react-router-dom";
-import { KeepAliveRouteOutlet, useKeepaliveRef } from "keepalive-for-react";
 
 import { Header } from "@/components/panel/head-bar";
 import { Sidebar } from "@/components/panel/sidebar";
@@ -22,37 +20,6 @@ export function MainLayout() {
         <Header title={state?.label} />
         <main className="container flex-1 px-4 py-8 sm:px-8">
           <Outlet />
-        </main>
-        {/* <Footer /> */}
-      </div>
-    </>
-  );
-}
-
-export function MainLayoutWithCache() {
-  const { state } = useLocation();
-  const { sidebar } = useSidebar();
-  const aliveRef = useKeepaliveRef();
-
-  return (
-    <>
-      <Sidebar />
-      <div
-        className={cn(
-          "flex h-screen flex-col bg-zinc-50 transition-[margin-left] duration-300 ease-in-out dark:bg-zinc-900",
-          !sidebar.isOpen ? "lg:ml-16" : "lg:ml-56",
-        )}>
-        <Header title={state?.label} />
-        <main className="container flex-1 p-4">
-          {/* <CustomSuspense> */}
-          <KeepAliveRouteOutlet
-            // wrapperComponent={MemoScrollTopWrapper}
-            duration={300}
-            transition={true}
-            exclude={[]}
-            aliveRef={aliveRef}
-          />
-          {/* </CustomSuspense> */}
         </main>
         {/* <Footer /> */}
       </div>

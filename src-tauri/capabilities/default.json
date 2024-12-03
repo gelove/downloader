@@ -6,12 +6,7 @@
   "platforms": ["macOS", "linux", "windows"],
   "permissions": [
     "core:default",
-    "core:menu:default",
-    "core:resources:default",
-    "core:tray:default",
-    "core:webview:default",
     "core:webview:allow-create-webview-window",
-    "core:window:default",
     "core:window:allow-start-dragging",
     "core:window:allow-close",
     "core:window:allow-hide",
@@ -36,10 +31,13 @@
         { "path": "$RESOURCE/**" }
       ]
     },
+    "notification:default",
     "os:default",
     "process:default",
     "shell:default",
     "shell:allow-kill",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-unregister",
     "updater:default"
   ]
 }

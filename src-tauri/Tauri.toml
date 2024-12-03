@@ -1,7 +1,7 @@
 productName = "Downloader"
 # mainBinaryName = "downloader"
 identifier = "top.allens.downloader"
-version = "1.0.4"
+version = "1.0.5"
 
 [build]
 beforeDevCommand = "pnpm dev"
@@ -48,11 +48,12 @@ titleBarStyle = "Overlay"
 # transparent = true
 
 # [[app.windows]]
-# label = "tray_menu"
-# url = "/tray_menu"
-# width = 192
-# height = 128
+# label = "updater"
+# url = "/updater"
+# width = 720
+# height = 240
 # visible = false
+# resizable = false
 # decorations = false
 # transparent = true
 

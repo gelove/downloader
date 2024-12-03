@@ -13,21 +13,42 @@ pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
         .tooltip("downloader")
         .icon(app.default_window_icon().unwrap().clone())
         .menu(&menu)
-        .menu_on_left_click(true)
+        .menu_on_left_click(false)
+        // .show_menu_on_left_click(false) // next version
         .on_menu_event(|app, event| match event.id.as_ref() {
             "setting" => {
                 tracing::debug!("setting menu item was clicked");
                 // app.exit(0);
                 app.emit("goto", "/setting/config".to_string())
                     .expect("Failed to emit goto event");
-                let win = app.get_window("main").expect("main window not found");
-                win.show().expect("Failed to show window");
-                win.set_focus().expect("Failed to focus window");
+                if let Some(win) = app.get_window("main") {
+                    if let Ok(visible) = win.is_visible() {
+                        if !visible {
+                            let _ = win.show();
+                        }
+                    }
+                    if let Ok(focused) = win.is_focused() {
+                        if !focused {
+                            let _ = win.set_focus();
+                        }
+                    }
+                }
             }
             "update" => {
                 tracing::debug!("update menu item was clicked");
                 app.emit("update", "update".to_string())
                     .expect("Failed to emit update event");
+                // if let Some(wind) = app.get_window("updater") {
+                //     let _ = wind.show();
+                //     let _ = wind.set_focus();
+                //     return;
+                // }
+                // let _ =
+                //     WebviewWindowBuilder::new(app, "updater", WebviewUrl::App("updater".into()))
+                //         .inner_size(600.0, 240.0)
+                //         .resizable(false)
+                //         .center()
+                //         .build();
             }
             "quit" => {
                 tracing::debug!("quit menu item was clicked");
@@ -47,26 +68,25 @@ pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
             } => match button {
                 MouseButton::Left {} => {
                     tracing::debug!("Tray icon left clicked at position: {:?}", position);
+                    let app = tray.app_handle();
 
                     #[cfg(target_os = "macos")]
-                    tray.app_handle().show().expect("Failed to show window");
-
-                    let window = tray
-                        .app_handle()
-                        .get_window("main")
-                        .expect("main window not found");
+                    app.show().expect("Failed to show window");
 
                     #[cfg(not(target_os = "macos"))]
-                    window.show().expect("Failed to show main window");
-
-                    window.set_focus().expect("Failed to focus window");
+                    {
+                        if let Some(wind) = app.get_window("main") {
+                            let _ = wind.show();
+                            let _ = wind.set_focus();
+                        }
+                    }
                 }
-                MouseButton::Right {} => {
-                    tracing::debug!("Tray icon right clicked at position: {:?}", position);
-                    tray.app_handle()
-                        .emit("tray_contextmenu", position)
-                        .expect("Failed to emit tray_contextmenu event");
-                }
+                // MouseButton::Right {} => {
+                //     tracing::debug!("Tray icon right clicked at position: {:?}", position);
+                //     tray.app_handle()
+                //         .emit("tray_contextmenu", position)
+                //         .expect("Failed to emit tray_contextmenu event");
+                // }
                 _ => {}
             },
             TrayIconEvent::Enter {

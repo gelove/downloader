@@ -2,7 +2,6 @@ import { createBrowserRouter } from "react-router-dom";
 
 import { AppLayout } from "@/layouts";
 import Dashboard from "@/pages/dashboard";
-import Download from "@/pages/app/update";
 import TrayMenu from "@/pages/app/tray-menu";
 import Config from "@/pages/setting/config";
 import Media from "@/pages/tools/media";
@@ -72,10 +71,9 @@ const router = createBrowserRouter([
     path: "player",
     element: <Player />,
   },
-  { path: "tray_menu", element: <TrayMenu /> },
   {
-    path: "download",
-    element: <Download />,
+    path: "tray_menu",
+    element: <TrayMenu />,
   },
   {
     path: "example",

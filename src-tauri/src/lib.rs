@@ -2,9 +2,7 @@ use std::env;
 use std::path::PathBuf;
 
 use chrono::Local;
-// use tauri::{ipc::Channel, AppHandle};
-use tauri::{Listener, Manager};
-use tauri_plugin_updater::UpdaterExt;
+use tauri::{Listener, Manager, RunEvent};
 use tracing::level_filters::LevelFilter;
 use tracing_appender::{non_blocking, rolling};
 use tracing_error::ErrorLayer;
@@ -89,62 +87,6 @@ fn format_log(content: &str) -> Vec<serde_json::Value> {
     return vec![data];
 }
 
-#[allow(dead_code)]
-async fn update(handle: tauri::AppHandle) -> anyhow::Result<()> {
-    let mut builder = handle.updater_builder();
-    if std::env::var("TARGET").unwrap_or_default() == "nsis" {
-        // /D sets the default installation directory ($INSTDIR),
-        // overriding InstallDir and InstallDirRegKey.
-        // It must be the last parameter used in the command line and must not contain any quotes, even if the path contains spaces.
-        // Only absolute paths are supported.
-        // NOTE: we only need this because this is an integration test and we don't want to install the app in the programs folder
-        builder = builder.installer_args(vec![format!(
-            "/D={}",
-            tauri::utils::platform::current_exe()?
-                .parent()
-                .unwrap()
-                .display()
-        )]);
-    }
-    let updater = builder
-        // .version_comparator(|current, update| {
-        //     // 允许版本降级
-        //     // default comparison: `update.version > current`
-        //     update.version != current
-        // })
-        .build()?;
-
-    let mut downloaded = 0;
-
-    match updater.check().await {
-        Ok(Some(update)) => {
-            if let Err(e) = update
-                .download_and_install(
-                    |chunk_length, content_length| {
-                        downloaded += chunk_length;
-                        println!("downloaded {downloaded} from {content_length:?}");
-                    },
-                    || {
-                        println!("download finished");
-                    },
-                )
-                .await
-            {
-                println!("{e}");
-                std::process::exit(1);
-            }
-            std::process::exit(0);
-        }
-        Ok(None) => {
-            std::process::exit(2);
-        }
-        Err(e) => {
-            println!("{e}");
-            std::process::exit(1);
-        }
-    }
-}
-
 pub fn run() {
     let _ = fix_path_env::fix();
 
@@ -153,7 +95,9 @@ pub fn run() {
     // let current_dir = std::env::current_dir().unwrap();
     // println!("Current directory: {}", current_dir.display());
 
-    let mut app = tauri::Builder::default()
+    let mut builder = tauri::Builder::default()
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         // .plugin(
@@ -176,13 +120,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
-        // .menu(menu)
         .setup(|app| {
-            // let handle = app.handle().clone();
-            // tauri::async_runtime::spawn(async move {
-            //     update(handle).await;
-            // });
-
             let resolver = app.path();
             let config_dir = resolver
                 .app_config_dir()
@@ -260,31 +198,14 @@ pub fn run() {
             command::get_videos_by_uid,
             command::download,
             // download_bin,
-        ])
-        .on_window_event(|window, event| match event {
-            tauri::WindowEvent::Focused(_focused) => {
-                // hide window whenever it loses focus
-                // if !focused {
-                //     window.hide().expect("Failed to hide window");
-                // }
-            }
-            tauri::WindowEvent::CloseRequested { api, .. } => {
-                tracing::debug!("Window close requested");
-                if window.label() == "main" {
-                    // 取消关闭操作，并隐藏窗口
-                    api.prevent_close();
+        ]);
 
-                    #[cfg(target_os = "macos")]
-                    window.app_handle().hide().expect("Failed to hide app");
+    #[cfg(target_os = "macos")]
+    {
+        builder = builder.menu(tauri::menu::Menu::default);
+    }
 
-                    #[cfg(not(target_os = "macos"))]
-                    window
-                        .hide()
-                        .expect("Failed to hide window in close_requested event");
-                }
-            }
-            _ => {}
-        })
+    let mut app = builder
         .build(tauri::generate_context!())
         .expect("error while building tauri application");
 
@@ -358,17 +279,17 @@ pub fn run() {
     app.run(move |handle, event| {
         // #[cfg(all(desktop, not(test)))]
         match event {
-            // tauri::RunEvent::ExitRequested { api, .. } => {
-            //     tracing::info!("Exit requested");
-            //     // 阻止应用程序退出
-            //     // 即使所有窗口都关闭, 事件循环仍保持运行
-            //     // 这允许我们在没有窗口时捕获托盘图标事件
-            //     api.prevent_exit();
-            // }
-            tauri::RunEvent::ExitRequested { .. } => {
-                tracing::info!("Exit requested");
+            RunEvent::ExitRequested { code, api, .. } => {
+                tracing::info!(?code, "ExitRequested event");
+                // code 为 None 表示应用程序由用户点击关闭按钮退出
+                if code.is_none() {
+                    // 阻止应用程序退出
+                    // 即使所有窗口都关闭, 事件循环仍保持运行
+                    // 这允许我们在没有窗口时捕获托盘图标事件
+                    api.prevent_exit();
+                }
             }
-            tauri::RunEvent::Exit => {
+            RunEvent::Exit => {
                 // 程序退出时取消监听
                 handle.unlisten(test_handler);
                 handle.unlisten(debug_handler);
@@ -378,6 +299,60 @@ pub fn run() {
                 tracing::info!("Exit event loop");
                 // 在退出之前会自动调用
                 // handle.cleanup_before_exit();
+            }
+
+            // RunEvent::WindowEvent {
+            //     event: tauri::WindowEvent::CloseRequested { api, .. },
+            //     label,
+            //     ..
+            // } => {
+            //     println!("closing window...");
+            //     // run the window destroy manually just for fun :)
+            //     // usually you'd show a dialog here to ask for confirmation or whatever
+            //     api.prevent_close();
+            //     _app_handle
+            //         .get_webview_window(label)
+            //         .unwrap()
+            //         .destroy()
+            //         .unwrap();
+            // }
+            RunEvent::WindowEvent {
+                event: tauri::WindowEvent::Focused(_focused),
+                // label,
+                ..
+            } => {
+                // 当窗口失去焦点时隐藏窗口
+                // if !focused {
+                //     window.hide().expect("Failed to hide window");
+                // }
+            }
+            RunEvent::WindowEvent {
+                event: tauri::WindowEvent::CloseRequested { api, .. },
+                label,
+                ..
+            } => {
+                tracing::debug!("Window close requested: {}", label);
+                if label == "main" {
+                    // 取消关闭操作，并隐藏窗口
+                    api.prevent_close();
+
+                    #[cfg(target_os = "macos")]
+                    handle.hide().expect("Failed to hide app");
+
+                    #[cfg(not(target_os = "macos"))]
+                    handle
+                        .get_window(&label)
+                        // .get_webview_window(&label)
+                        .expect("Failed to get window")
+                        .hide()
+                        .expect("Failed to hide window in close_requested event");
+                }
+                if label == "updater" {
+                    tracing::debug!("updater close requested");
+                    // if let Some(win) = app.get_window(&label) {
+                    //     let _ = win.destroy();
+                    // }
+                }
             }
             _ => {}
         }

@@ -1,6 +1,6 @@
 [package]
 name = "downloader"
-version = "1.0.4"
+version = "1.0.5"
 description = "douyin downloader, video and audio transformer"
 authors = ["Allen"]
 edition = "2021"
@@ -20,9 +20,9 @@ tauri-build = { version = "2.0.3", features = ["config-toml"] }
 [dependencies]
 # async-recursion = "1" # allowe recursion in async functions 
 anyhow = "1.0.93"
-bytes = "1.8.0"
+bytes = "1.9.0"
 # 强制 cc = "=1.1.31" 版本，否则会导致编译失败
-cc = "=1.1.31"
+cc = "1.2.2"
 chrono = "0.4.38"
 dotenv = "0.15.0"
 fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs" }
@@ -41,36 +41,39 @@ reqwest = { version = "0.12.9", features = [
 ] }
 # rustyscript = { version = "0.8.3", features = ["url_import"] }
 serde = { version = "1.0.215", features = ["derive"] }
-serde_json = "1.0.132"
+serde_json = "1.0.133"
 serde_urlencoded = "0.7.1"
 sm3 = "0.4.2"
-sysinfo = "0.32.0"
+sysinfo = "0.32.1"
 tauri = { version = "2.1.1", features = [
   "macos-private-api",
   "protocol-asset",
   "config-toml",
-  # "devtools",
+  "devtools",
   "tray-icon",
   "unstable",
 ] }
-tauri-plugin-fs = "2.0.3"
-tauri-plugin-shell = "2.0.2"
-tauri-plugin-dialog = "2.0.3"
-tauri-plugin-process = "2.0.1"
+tauri-plugin-dialog = "2.0.4"
+tauri-plugin-fs = "2.1.0"
 # tauri-plugin-log = "2"
+tauri-plugin-notification = { version = "2.0.1", features = [
+  "windows7-compat",
+] }
+tauri-plugin-os = "2.0.1"
+tauri-plugin-process = "2.0.1"
+tauri-plugin-shell = "2.0.2"
 thiserror = "2.0.3"
 toml = { version = "0.8.19", features = ["parse"] }
 tokio = { version = "1.41.1", features = ["full"] }
-tracing = "0.1.40"
+tracing = "0.1.41"
 tracing-appender = "0.2.3"
-tracing-error = "0.2.0"
-tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+tracing-error = "0.2.1"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 walkdir = "2.5.0"
-tauri-plugin-os = "2"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
-# tauri-plugin-updater = { version = "2.0.2", features = ["rustls-tls"] }
-tauri-plugin-updater = "2.0.2"
+tauri-plugin-global-shortcut = "2.0.1"
+tauri-plugin-updater = "2.1.0"
 
 [dev-dependencies]
 tauri = { version = "2.1.1", features = ["test"] }
